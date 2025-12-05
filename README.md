@@ -44,12 +44,7 @@
     -   10.1 [Framework Improvements](#101-framework-improvements)
     -   10.2 [Future Research Directions](#102-future-research-directions)
 11. [Conclusion](#11-conclusion)
-12. [Appendices](#12-appendices)
-    -   [Appendix A: Variable Definitions](#appendix-a-variable-definitions)
-    -   [Appendix B: Complete Reliability Statistics](#appendix-b-complete-reliability-statistics)
-    -   [Appendix C: Contingency Tables](#appendix-c-contingency-tables)
-    -   [Appendix D: Code Repository](#appendix-d-code-repository)
-13. [References](#13-references)
+12. [References](#12-references)
 
 ------------------------------------------------------------------------
 
@@ -329,6 +324,67 @@ wrap_plots(heatmaps, ncol = 1)
 
 ## 5. Reliability Analysis
 
+### 5.1 Overview
+
+Inter-rater reliability was assessed using: **Percent Agreement** between two raters, **Intraclass Correlation Coefficient (ICC)** for count variables - **Cohen's Kappa (κ)** for categorical epistemology variables
+
+### 5.2 Percent Agreement
+
+``` r
+library(tidyverse)
+setwd("D:/QUIVR")
+
+# Read data
+andrew <- read.csv("QUIVR rubric - Andrew Pass.csv")
+marcus <- read.csv("QUIVR rubric - Marcus Pass.csv")
+# Filter to matching rows
+filter_andrew <- andrew %>%
+  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
+filter_marcus <- marcus %>%
+  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
+# Join
+joined <- filter_andrew %>%
+  inner_join(filter_marcus, by = "Coder.intials", suffix = c("_A", "_M"))
+# Replace NA with 0
+replace_na_0 <- function(x) {
+  x <- as.character(x)
+  x[is.na(x) | x == ""] <- "0"
+  as.numeric(x)
+}
+# All columns to compare
+cols <- c("Number.of.Figures", "Number.of.Tables", "Matrix.Display", "Network",
+          "Flowchart", "Box.display", "Modified.Venn.Diagram", "Taxonomy",
+          "Ladder", "Metaphorical.visual.display", "Decision.tree.model",
+          "Data.Based.Graphs", "Mixed.Media", "Screenshots", "Other",
+          "Video", "Non.visual.Audio", "Photographs", "Drawings",
+          "Audience.Accessibility", "Descriptive", "Exploratory",
+          "Explanatory", "Interpretive", "Persuasive", "Objectivism",
+          "Constructivism", "Subjectivism")
+# Store all agreements
+all_agreements <- c()
+# Calculate agreement for each
+for (col in cols) {
+  a_col <- paste0(col, "_A")
+  m_col <- paste0(col, "_M")
+  # CHECK IF COLUMNS EXIST FIRST
+  if (a_col %in% names(joined) && m_col %in% names(joined)) {
+    joined[[a_col]] <- replace_na_0(joined[[a_col]])
+    joined[[m_col]] <- replace_na_0(joined[[m_col]])
+    agreement <- mean(joined[[a_col]] == joined[[m_col]]) * 100
+    all_agreements <- c(all_agreements, agreement)
+    cat(col, ":", round(agreement, 1), "%\n")
+  } else {
+    cat(col, ": COLUMN NOT FOUND\n")
+  }
+Study reliability
+study_reliability <- mean(all_agreements, na.rm = TRUE)
+cat("Overall Agreement:", round(study_reliability, 1), "%\n")
+```
+
+### ![](images/overallagreement.png)
+
+5.3 Variable Categories
+
 ### Code Setup
 
 ``` r
@@ -392,65 +448,6 @@ tryCatch({
   cat("Error importing data:", e$message, "\n")
 })
 ```
-
-### 5.1 Overview
-
-Inter-rater reliability was assessed using: **Percent Agreement** between two raters, **Intraclass Correlation Coefficient (ICC)** for count variables - **Cohen's Kappa (κ)** for categorical epistemology variables
-
-### 5.2 Percent Agreement
-
-``` r
-library(tidyverse)
-setwd("D:/QUIVR")
-
-# Read data
-andrew <- read.csv("QUIVR rubric - Andrew Pass.csv")
-marcus <- read.csv("QUIVR rubric - Marcus Pass.csv")
-# Filter to matching rows
-filter_andrew <- andrew %>%
-  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
-filter_marcus <- marcus %>%
-  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
-# Join
-joined <- filter_andrew %>%
-  inner_join(filter_marcus, by = "Coder.intials", suffix = c("_A", "_M"))
-# Replace NA with 0
-replace_na_0 <- function(x) {
-  x <- as.character(x)
-  x[is.na(x) | x == ""] <- "0"
-  as.numeric(x)
-}
-# All columns to compare
-cols <- c("Number.of.Figures", "Number.of.Tables", "Matrix.Display", "Network",
-          "Flowchart", "Box.display", "Modified.Venn.Diagram", "Taxonomy",
-          "Ladder", "Metaphorical.visual.display", "Decision.tree.model",
-          "Data.Based.Graphs", "Mixed.Media", "Screenshots", "Other",
-          "Video", "Non.visual.Audio", "Photographs", "Drawings",
-          "Audience.Accessibility", "Descriptive", "Exploratory",
-          "Explanatory", "Interpretive", "Persuasive", "Objectivism",
-          "Constructivism", "Subjectivism")
-# Store all agreements
-all_agreements <- c()
-# Calculate agreement for each
-for (col in cols) {
-  a_col <- paste0(col, "_A")
-  m_col <- paste0(col, "_M")
-  # CHECK IF COLUMNS EXIST FIRST
-  if (a_col %in% names(joined) && m_col %in% names(joined)) {
-    joined[[a_col]] <- replace_na_0(joined[[a_col]])
-    joined[[m_col]] <- replace_na_0(joined[[m_col]])
-    agreement <- mean(joined[[a_col]] == joined[[m_col]]) * 100
-    all_agreements <- c(all_agreements, agreement)
-    cat(col, ":", round(agreement, 1), "%\n")
-  } else {
-    cat(col, ": COLUMN NOT FOUND\n")
-  }
-Study reliability
-study_reliability <- mean(all_agreements, na.rm = TRUE)
-cat("Overall Agreement:", round(study_reliability, 1), "%\n")
-```
-
-### 5.3 Variable Categories
 
 ``` r
 ## COUNT VARIABLES (use ICC)
@@ -525,6 +522,8 @@ cat(sprintf("\n→ Mean ICC for all count variables: %.3f (n=%d)\n",
             length(count_icc_results)))
 ```
 
+![](images/subcategory.png)
+
 ### 5.5 Cohen's Kappa for Epistemology Variables
 
 ``` r
@@ -563,11 +562,11 @@ cat(sprintf("\n→ Mean Kappa for epistemology variables: %.3f (n=%d)\n",
             length(epistemo_kappa_results)))
 ```
 
+![](images/kappa.png)
+
 ### 5.6 Summary Results
 
-### ![](images/subcategory.png)
-
-![](images/kappa.png)
+### 
 
 ### 5.7 Interpretation Guide
 
@@ -925,31 +924,13 @@ Despite low inter-rater reliability for some variables, the multivariate analyse
 
 ------------------------------------------------------------------------
 
-## 12. Appendices
-
-### Appendix A: Variable Definitions {#appendix-a-variable-definitions}
-
-[INSERT DETAILED VARIABLE DEFINITIONS]
-
-### Appendix B: Complete Reliability Statistics {#appendix-b-complete-reliability-statistics}
-
-[INSERT COMPLETE TABLES]
-
-### Appendix C: Contingency Tables {#appendix-c-contingency-tables}
-
-[INSERT ALL CONTINGENCY TABLES]
-
-### Appendix D: Code Repository {#appendix-d-code-repository}
-
-All analysis code is available at: [INSERT REPOSITORY LINK]
-
-------------------------------------------------------------------------
-
-## 13. References
+## 12. References
 
 Landis, J. R., & Koch, G. G. (1977). The measurement of observer agreement for categorical data. *Biometrics*, 33(1), 159-174.
 
 Verdinelli, S., & Scagnoli, N. I. (2013). Data display in qualitative research. *International Journal of Qualitative Methods*, 12(1), 359-381.
+
+#Not done
 
 ------------------------------------------------------------------------
 
