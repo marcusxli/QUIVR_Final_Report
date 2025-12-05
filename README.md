@@ -18,3 +18,23 @@ We replicated Verdinelli and Scagnoli (2013) by coding 20 articles containing 33
 8.  [Discussion](#discussion)
 9.  [Recommendations](#recommendations)
 10. [Appendices](#appendices)
+
+## 1. Introduction {#introduction}
+
+This report presents a comprehensive replication and extension of Verdinelli and Scagnoli's (2013) framework for analyzing qualitative research visualizations. We examined how epistemological perspectives relate to visualization choices and analytical purposes in contemporary qualitative research publications.
+
+## 2. Methods {#methods}
+
+### Data Collection
+
+-   **Sample**: 20 articles from three qualitative research journals (2020-2022)
+-   **Visualizations**: 33 total visualizations coded
+-   **Coders**: Two independent raters (Andrew and Marcus)
+
+### Variables Coded
+
+**Epistemological Stances**: - Objectivism - Constructivism - Subjectivism
+
+**Visualization Types**: - Matrix Display - Network - Flowchart - Box display - Modified Venn Diagram - Taxonomy - Ladder - Metaphorical visual display - Decision tree model - Screenshots - Photographs - Drawings
+
+**Analytical Purposes**: - Descriptive - Exploratory - Explanatory - Interpretive - Persuasive
