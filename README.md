@@ -14,7 +14,7 @@
     -   4.2 [Type-Purpose Heatmaps by Epistemic Stance](#42-type-purpose-heatmaps-by-epistemic-stance)
 5.  [Reliability Analysis](#5-reliability-analysis)
     -   5.1 [Overview](#51-overview)
-    -   5.2 [Data Preparation for Reliability Analysis](#52-data-preparation-for-reliability-analysis)
+    -   5.2 [Percent Agreement](#52-data-preparation-for-reliability-analysis)
     -   5.3 [Variable Categories](#53-variable-categories)
     -   5.4 [ICC Analysis for Count Variables](#54-icc-analysis-for-count-variables)
     -   5.5 [Cohen's Kappa for Epistemology Variables](#55-cohens-kappa-for-epistemology-variables)
@@ -568,6 +568,8 @@ cat(sprintf("\n→ Mean Kappa for epistemology variables: %.3f (n=%d)\n",
 
 ### 5.7 Interpretation Guide
 
+![](images/interpret.png)
+
 ### 5.8 Key Findings
 
 ## 6. Multiple Correspondence Analysis (MCA)
@@ -718,7 +720,7 @@ fviz_screeplot(ca_result,
 # Factoshiny(ca_result)
 ```
 
-### ![](images/ca.png)  7.3 CA With Missing Data
+### ![](images/ca.png) 7.3 CA With Missing Data
 
 Including "None" categories:
 
@@ -781,8 +783,6 @@ fviz_ca_biplot(ca_result_missing,
 ```
 
 ### ![](images/caNone.png) 7.4 CA Interpretation
-
-[INSERT INTERPRETATION OF CA RESULTS HERE]
 
 ------------------------------------------------------------------------
 
@@ -884,8 +884,6 @@ fviz_pca_var(pca_result_complete,
 
 ### ![](images/pcaNone-02.png) 8.4 PCA Interpretation
 
-[INSERT INTERPRETATION OF PCA RESULTS HERE]
-
 ------------------------------------------------------------------------
 
 ## 9. Discussion
@@ -899,8 +897,6 @@ fviz_pca_var(pca_result_complete,
 Despite low inter-rater reliability for some variables, the multivariate analyses (MCA, CA, PCA) revealed consistent patterns: - Matrix displays dominate constructivist research - Photographs cluster with subjectivist approaches - Descriptive purposes align with specific epistemologies
 
 ### 9.3 Implications for Framework Development
-
-[DISCUSS IMPLICATIONS]
 
 ------------------------------------------------------------------------
 
@@ -917,10 +913,7 @@ Despite low inter-rater reliability for some variables, the multivariate analyse
 
 ### 10.2 Future Research Directions
 
-1.  Expand sample to include more journals and time periods
-2.  Examine longitudinal trends in visualization practices
-3.  Investigate disciplinary differences in visualization use
-4.  Develop machine learning approaches for automated coding
+1.  
 
 ------------------------------------------------------------------------
 
