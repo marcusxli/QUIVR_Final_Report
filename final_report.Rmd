@@ -210,3 +210,68 @@ ggplot() +
     legend.position = "right"
     )
 ```
+
+# Type-Purpose Heatmaps by Epistemic Stance
+
+```{r heatmaps}
+# Build Type–Purpose–Epistemic triads
+triads <- long %>%
+  select(.paper_id, dimension, label) %>%
+  pivot_wider(names_from = dimension, values_from = label, values_fn = list) %>%
+  unnest(Type, keep_empty = TRUE) %>%
+  unnest(Purpose, keep_empty = TRUE) %>%
+  unnest(Epistemic, keep_empty = TRUE) %>%
+  filter(!is.na(Type), !is.na(Purpose), !is.na(Epistemic)) %>%
+  mutate(
+    Type = gsub("^T: ", "", Type),
+    Purpose = gsub("^P: ", "", Purpose),
+    Epistemic = gsub("^E: ", "", Epistemic)
+    ) %>%
+  count(Type, Purpose, Epistemic, name = "freq") %>%
+  filter(freq >= 1)
+
+epi_levels <- unique(triads$Epistemic)
+
+make_heatmap <- function(epi) {
+plot_data <- triads %>%
+  filter(Epistemic == epi) %>%
+  complete(Type, Purpose, fill = list(freq = 0))
+
+ggplot(plot_data, aes(x = Type, y = Purpose, fill = freq)) +
+  geom_tile(color = "white", linewidth = 0.5) +
+  geom_text(
+    aes(label = ifelse(freq > 0, freq, "")),
+    color = "white",
+    fontface = "bold",
+    size = 4
+    ) +
+  scale_fill_gradient(
+    low = "gray90",
+    high = "#009E73",
+    na.value = "white"
+    ) +
+  labs(
+    title = paste("Triad Frequency:", epi),
+    x = "Type",
+    y = "Purpose",
+    fill = "Frequency"
+    ) +
+  theme_minimal(base_size = 11) +
+  theme(plot.background = element_rect(fill = "white", color = NA),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+        axis.text.y = element_text(size = 9),
+        plot.title = element_text(face = "bold", size = 12),
+        panel.grid = element_blank()
+  )
+}
+
+heatmaps <- lapply(epi_levels, make_heatmap)
+
+wrap_plots(heatmaps, ncol = 1) +
+  plot_annotation(
+    title = "Type–Purpose Heatmaps by Epistemic Stance",
+    theme = theme(
+      plot.title = element_text(face = "bold", size = 16, hjust = 0.5)
+      )
+    )
+```
