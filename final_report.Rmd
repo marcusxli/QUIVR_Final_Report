@@ -76,5 +76,137 @@ TRUE ~ "Other"
 ),
 label = paste0(substr(dimension, 1, 1), ": ", str_to_title(gsub("_", " ", code)))
 )
+```
 
+# Build Network
+
+```{r build-network}
+# Network settings to change if needed
+edge_threshold <- 3
+min_node_freq  <- 2
+
+# Build edge list
+paper_codes <- long %>%
+group_by(.paper_id) %>%
+summarise(codes = list(unique(label)), .groups = "drop") %>%
+filter(lengths(codes) >= 2)
+
+# All pairs of codes within a paper
+pair_list <- lapply(paper_codes$codes, function(x) {
+combn(x, 2) %>%
+t() %>%
+as.data.frame() %>%
+setNames(c("from", "to"))
+})
+
+edges <- bind_rows(pair_list) %>%
+count(from, to, name = "weight") %>%
+filter(weight >= edge_threshold)
+
+# Nodes with frequencies
+nodes <- long %>%
+count(label, dimension, name = "freq") %>%
+filter(freq >= min_node_freq, label %in% c(edges$from, edges$to))
+```
+
+# Main Epistemic Network
+
+```{r ena}
+# Start with random layout
+set.seed(16)
+nodes$x <- runif(nrow(nodes))
+nodes$y <- runif(nrow(nodes))
+
+# Very simple force-directed style layout
+for (iter in 1:50) {
+
+# Repulsion between all nodes
+for (i in 1:nrow(nodes)) {
+dx <- nodes$x[i] - nodes$x[-i]
+dy <- nodes$y[i] - nodes$y[-i]
+dist <- sqrt(dx^2 + dy^2) + 0.01
+
+
+nodes$x[i] <- nodes$x[i] + sum(dx / dist^2) * 0.01
+nodes$y[i] <- nodes$y[i] + sum(dy / dist^2) * 0.01
+
+
+}
+
+# Attraction along edges
+for (j in 1:nrow(edges)) {
+idx_from <- which(nodes$label == edges$from[j])
+idx_to   <- which(nodes$label == edges$to[j])
+
+if (length(idx_from) == 1 && length(idx_to) == 1) {
+  dx <- nodes$x[idx_to] - nodes$x[idx_from]
+  dy <- nodes$y[idx_to] - nodes$y[idx_from]
+  
+  nodes$x[idx_from] <- nodes$x[idx_from] + dx * 0.1
+  nodes$y[idx_from] <- nodes$y[idx_from] + dy * 0.1
+  
+  nodes$x[idx_to]   <- nodes$x[idx_to]   - dx * 0.1
+  nodes$y[idx_to]   <- nodes$y[idx_to]   - dy * 0.1
+}
+
+}
+}
+
+# Edges with coordinates
+edges_plot <- edges %>%
+left_join(nodes %>% select(label, x, y), by = c("from" = "label")) %>%
+rename(x0 = x, y0 = y) %>%
+left_join(nodes %>% select(label, x, y), by = c("to" = "label")) %>%
+rename(x1 = x, y1 = y)
+
+# Colors by dimension
+dim_colors <- c(
+"Type"      = "#E69F00",
+"Purpose"   = "#56B4E9",
+"Epistemic" = "#009E73"
+)
+
+ggplot() +
+  geom_segment(
+    data = edges_plot,
+    aes(x = x0, y = y0, xend = x1, yend = y1, linewidth = weight),
+    alpha = 0.15,
+    color = "gray60"
+    ) +
+  geom_point(
+    data = nodes,
+    aes(x = x, y = y, color = dimension, size = freq),
+    alpha = 0.95
+    ) +
+  geom_text(
+    data = nodes,
+    aes(
+      x = x,
+      y = y,
+      label = gsub("^[TPE]: ", "", label)
+      ),
+    size = 3.5,
+    vjust = -1.2,
+    fontface = "bold",
+    check_overlap = TRUE
+    ) +
+  scale_color_manual(values = dim_colors, name = "Dimension") +
+  scale_size_continuous(range = c(5, 12), name = "Frequency") +
+  scale_linewidth_continuous(range = c(0.5, 3), guide = "none") +
+  labs(
+    title = "QUIVR Epistemic Network Analysis",
+    subtitle = paste0(
+      "Showing codes appearing ", min_node_freq, "+ times | ",
+      "Edges ≥ ", edge_threshold, " co-occurrences | n = ", nrow(df), " papers"
+      ),
+    caption = "Node size = frequency | Edge thickness = co-occurrence strength | Colors = dimension"
+    ) +
+  theme_void(base_size = 13) +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 11),
+    plot.caption = element_text(hjust = 0.5, size = 10, color = "gray40"),
+    legend.position = "right"
+    )
 ```
