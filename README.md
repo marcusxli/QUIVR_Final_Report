@@ -395,36 +395,59 @@ tryCatch({
 
 ### 5.1 Overview
 
-Inter-rater reliability was assessed using: - **Intraclass Correlation Coefficient (ICC)** for count variables - **Cohen's Kappa (κ)** for categorical epistemology variables
+Inter-rater reliability was assessed using: **Percent Agreement** between two raters, **Intraclass Correlation Coefficient (ICC)** for count variables - **Cohen's Kappa (κ)** for categorical epistemology variables
 
-### 5.2 Data Preparation for Reliability Analysis
+### 5.2 Percent Agreement
 
 ``` r
-## Load CSV files for reliability testing
+library(tidyverse)
 setwd("D:/QUIVR")
 
+# Read data
 andrew <- read.csv("QUIVR rubric - Andrew Pass.csv")
 marcus <- read.csv("QUIVR rubric - Marcus Pass.csv")
-
-## Filter to matching rows (20 overlapping articles)
+# Filter to matching rows
 filter_andrew <- andrew %>%
-  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 
-                                91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
-
+  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
 filter_marcus <- marcus %>%
-  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 
-                                91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
-
-## Join datasets
+  filter(Coder.intials %in% c(7, 56, 120, 67, 35, 27, 79, 65, 96, 116, 91, 19, 107, 106, 115, 95, 4, 104, 17, 105))
+# Join
 joined <- filter_andrew %>%
   inner_join(filter_marcus, by = "Coder.intials", suffix = c("_A", "_M"))
-
-## Helper function to replace NA with 0
+# Replace NA with 0
 replace_na_0 <- function(x) {
   x <- as.character(x)
   x[is.na(x) | x == ""] <- "0"
   as.numeric(x)
 }
+# All columns to compare
+cols <- c("Number.of.Figures", "Number.of.Tables", "Matrix.Display", "Network",
+          "Flowchart", "Box.display", "Modified.Venn.Diagram", "Taxonomy",
+          "Ladder", "Metaphorical.visual.display", "Decision.tree.model",
+          "Data.Based.Graphs", "Mixed.Media", "Screenshots", "Other",
+          "Video", "Non.visual.Audio", "Photographs", "Drawings",
+          "Audience.Accessibility", "Descriptive", "Exploratory",
+          "Explanatory", "Interpretive", "Persuasive", "Objectivism",
+          "Constructivism", "Subjectivism")
+# Store all agreements
+all_agreements <- c()
+# Calculate agreement for each
+for (col in cols) {
+  a_col <- paste0(col, "_A")
+  m_col <- paste0(col, "_M")
+  # CHECK IF COLUMNS EXIST FIRST
+  if (a_col %in% names(joined) && m_col %in% names(joined)) {
+    joined[[a_col]] <- replace_na_0(joined[[a_col]])
+    joined[[m_col]] <- replace_na_0(joined[[m_col]])
+    agreement <- mean(joined[[a_col]] == joined[[m_col]]) * 100
+    all_agreements <- c(all_agreements, agreement)
+    cat(col, ":", round(agreement, 1), "%\n")
+  } else {
+    cat(col, ": COLUMN NOT FOUND\n")
+  }
+Study reliability
+study_reliability <- mean(all_agreements, na.rm = TRUE)
+cat("Overall Agreement:", round(study_reliability, 1), "%\n")
 ```
 
 ### 5.3 Variable Categories
@@ -542,17 +565,13 @@ cat(sprintf("\n→ Mean Kappa for epistemology variables: %.3f (n=%d)\n",
 
 ### 5.6 Summary Results
 
+### ![](images/subcategory.png)
+
+![](images/kappa.png)
+
 ### 5.7 Interpretation Guide
 
 ### 5.8 Key Findings
-
-**High Reliability** (ICC \> 0.80): - Basic figure and table counts: ICC = 0.963
-
-**Moderate Reliability** (ICC 0.60-0.80): - Epistemology classification: κ = 0.633
-
-**Poor Reliability** (ICC \< 0.40): - Analytical purpose coding: ICC = 0.186
-
-------------------------------------------------------------------------
 
 ## 6. Multiple Correspondence Analysis (MCA)
 
