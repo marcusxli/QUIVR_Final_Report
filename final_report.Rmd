@@ -6,25 +6,75 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.width = 12,
+                      fig.height= 8)
 ```
 
-## R Markdown
+# Setup
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r libraries}
+library(tidyverse)
+library(patchwork)
 ```
 
-## Including Plots
+# Load and Prepare Data
 
-You can also embed plots, for example:
+```{r load-data}
+# Load data
+rubric <- "QUIVR rubric - Final Pass.csv"
+raw <- read.csv(rubric)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# Basic column cleaning
+names(raw) <- tolower(names(raw))
+names(raw) <- gsub(" ", "_", names(raw))
+
+# Simple paper id
+raw$.paper_id <- if ("doi" %in% names(raw)) {
+raw$doi
+} else if ("title" %in% names(raw)) {
+raw$title
+} else {
+paste0("row_", seq_len(nrow(raw)))
+}
+
+# Column groups
+viz_cols <- c(
+"matrix_display", "network", "flowchart", "box_display",
+"venn_diagram", "taxonomy", "ladder", "metaphorical_visual_display",
+"decision_tree_model", "photographs", "drawings"
+)
+
+purpose_cols <- c("descriptive", "exploratory", "explanatory", "interpretive", "persuasive")
+
+epi_cols <- c("objectivism", "constructivism", "subjectivism")
+
+# Only keep columns that matter
+viz_cols     <- intersect(viz_cols, names(raw))
+purpose_cols <- intersect(purpose_cols, names(raw))
+epi_cols     <- intersect(epi_cols, names(raw))
+
+all_cols <- c(viz_cols, purpose_cols, epi_cols)
+
+# Make everything binary: 1 = present, 0 = not present
+df <- raw %>%
+select(.paper_id, all_of(all_cols)) %>%
+mutate(across(all_of(all_cols), ~ as.numeric(!is.na(.) & . != 0 & . != "")))
+
+# Long format with dimension labels
+long <- df %>%
+pivot_longer(cols = all_of(all_cols), names_to = "code", values_to = "val") %>%
+filter(val == 1) %>%
+mutate(
+dimension = case_when(
+code %in% viz_cols ~ "Type",
+code %in% purpose_cols ~ "Purpose",
+code %in% epi_cols ~ "Epistemic",
+TRUE ~ "Other"
+),
+label = paste0(substr(dimension, 1, 1), ": ", str_to_title(gsub("_", " ", code)))
+)
+
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
