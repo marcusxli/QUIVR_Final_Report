@@ -69,7 +69,7 @@ We employed multiple complementary statistical techniques:
 4.  **Correspondence Analysis (CA)**: Two-way relationships between epistemology and visualization type
 5.  **Principal Component Analysis (PCA)**: Dimensional reduction of visualization patterns
 
-### 2.4 Reproducible ENA and Heatmap Code
+### 2.4 ENA Data Prep
 
 ```r
 # Setup
@@ -130,8 +130,11 @@ long <- df %>%
     ),
     label = paste0(substr(dimension, 1, 1), ": ", str_to_title(gsub("_", " ", code)))
   )
-  
-# Main Epistemic Network
+```
+
+### 2.5 Main Epistemic Network
+
+```r
 set.seed(16)
 nodes$x <- runif(nrow(nodes))
 nodes$y <- runif(nrow(nodes))
@@ -205,8 +208,11 @@ ggplot() +
     )
   ) +
   theme_void(base_size = 13)
+```
 
-# Type–Purpose Heatmaps by Epistemic Stance
+### 2.6 Type-Purpose Heatmaps by Epistemic Stance
+
+```r
 triads <- long %>%
   select(.paper_id, dimension, label) %>%
   pivot_wider(names_from = dimension, values_from = label, values_fn = list) %>%
@@ -260,7 +266,7 @@ heatmaps <- lapply(epi_levels, make_heatmap)
 wrap_plots(heatmaps, ncol = 1)
 ```
 
-### 2.5 Code Setup
+### 2.7 Code Setup
 
 ``` r
 ## Package Installation and Loading
@@ -296,7 +302,7 @@ library(factoextra)
 library(irr)
 ```
 
-### 2.5 Data Import
+### 2.8 Data Import
 
 ``` r
 ## Google Drive Authentication
