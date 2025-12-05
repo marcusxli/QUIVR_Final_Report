@@ -207,8 +207,10 @@ ggplot() +
       "Edges ≥ ", edge_threshold, " co-occurrences | n = ", nrow(df), " papers"
     )
   ) +
-  theme_void(base_size = 13)
+  theme_void(base_size = 20)
 ```
+
+<img src="images/ena_network.png" width="600">
 
 ### 2.6 Type-Purpose Heatmaps by Epistemic Stance
 
@@ -265,6 +267,8 @@ make_heatmap <- function(epi) {
 heatmaps <- lapply(epi_levels, make_heatmap)
 wrap_plots(heatmaps, ncol = 1)
 ```
+
+<img src="images/heatmap.png" width="600">
 
 ### 2.7 Code Setup
 
