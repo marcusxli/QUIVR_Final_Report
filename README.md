@@ -383,7 +383,7 @@ cat("Overall Agreement:", round(study_reliability, 1), "%\n")
 
 ### ![](images/overallagreement.png)
 
-5.3 Variable Categories
+### 5.3 Variable Categories
 
 ### Code Setup
 
@@ -566,8 +566,6 @@ cat(sprintf("\n→ Mean Kappa for epistemology variables: %.3f (n=%d)\n",
 
 ### 5.6 Summary Results
 
-### 
-
 ### 5.7 Interpretation Guide
 
 ### 5.8 Key Findings
@@ -640,7 +638,13 @@ fviz_mca_var(mca_full,
 
 ### 6.4 MCA Interpretation
 
-[INSERT INTERPRETATION OF MCA RESULTS HERE]
+![](images/mca1.png)
+
+![](images/mca2.png)
+
+![](images/mca3.png)
+
+![](images/mca4.png)
 
 ------------------------------------------------------------------------
 
@@ -714,7 +718,7 @@ fviz_screeplot(ca_result,
 # Factoshiny(ca_result)
 ```
 
-### 7.3 CA With Missing Data
+### ![](images/ca.png)  7.3 CA With Missing Data
 
 Including "None" categories:
 
@@ -776,7 +780,7 @@ fviz_ca_biplot(ca_result_missing,
                title = "CA: Epistemology vs Figure Type (Including 'None')")
 ```
 
-### 7.4 CA Interpretation
+### ![](images/caNone.png) 7.4 CA Interpretation
 
 [INSERT INTERPRETATION OF CA RESULTS HERE]
 
@@ -831,6 +835,8 @@ fviz_pca_var(pca_result,
 # Factoshiny(pca_result)
 ```
 
+![](images/pca.png)
+
 ### 8.3 PCA With Missing Data
 
 Complete dataset:
@@ -876,7 +882,7 @@ fviz_pca_var(pca_result_complete,
 # Factoshiny(pca_result_complete)
 ```
 
-### 8.4 PCA Interpretation
+### ![](images/pcaNone-02.png) 8.4 PCA Interpretation
 
 [INSERT INTERPRETATION OF PCA RESULTS HERE]
 
