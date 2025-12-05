@@ -69,7 +69,198 @@ We employed multiple complementary statistical techniques:
 4.  **Correspondence Analysis (CA)**: Two-way relationships between epistemology and visualization type
 5.  **Principal Component Analysis (PCA)**: Dimensional reduction of visualization patterns
 
-### 2.4 Code Setup
+### 2.4 Reproducible ENA and Heatmap Code
+
+```r
+# Setup
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 12,
+  fig.height = 8
+)
+
+library(tidyverse)
+library(patchwork)
+
+# Load and Prepare Data
+rubric <- "QUIVR rubric - Final Pass.csv"
+raw <- read.csv(rubric)
+
+names(raw) <- tolower(names(raw))
+names(raw) <- gsub(" ", "_", names(raw))
+
+raw$.paper_id <- if ("doi" %in% names(raw)) {
+  raw$doi
+} else if ("title" %in% names(raw)) {
+  raw$title
+} else {
+  paste0("row_", seq_len(nrow(raw)))
+}
+
+viz_cols <- c(
+  "matrix_display", "network", "flowchart", "box_display",
+  "venn_diagram", "taxonomy", "ladder", "metaphorical_visual_display",
+  "decision_tree_model", "photographs", "drawings"
+)
+
+purpose_cols <- c("descriptive", "exploratory", "explanatory", "interpretive", "persuasive")
+epi_cols     <- c("objectivism", "constructivism", "subjectivism")
+
+viz_cols     <- intersect(viz_cols, names(raw))
+purpose_cols <- intersect(purpose_cols, names(raw))
+epi_cols     <- intersect(epi_cols, names(raw))
+
+all_cols <- c(viz_cols, purpose_cols, epi_cols)
+
+df <- raw %>%
+  select(.paper_id, all_of(all_cols)) %>%
+  mutate(across(all_of(all_cols), ~ as.numeric(!is.na(.) & . != 0 & . != "")))
+
+long <- df %>%
+  pivot_longer(cols = all_of(all_cols), names_to = "code", values_to = "val") %>%
+  filter(val == 1) %>%
+  mutate(
+    dimension = case_when(
+      code %in% viz_cols ~ "Type",
+      code %in% purpose_cols ~ "Purpose",
+      code %in% epi_cols ~ "Epistemic",
+      TRUE ~ "Other"
+    ),
+    label = paste0(substr(dimension, 1, 1), ": ", str_to_title(gsub("_", " ", code)))
+  )
+  
+# Main Epistemic Network
+set.seed(16)
+nodes$x <- runif(nrow(nodes))
+nodes$y <- runif(nrow(nodes))
+
+for (iter in 1:50) {
+  for (i in 1:nrow(nodes)) {
+    dx <- nodes$x[i] - nodes$x[-i]
+    dy <- nodes$y[i] - nodes$y[-i]
+    dist <- sqrt(dx^2 + dy^2) + 0.01
+
+    nodes$x[i] <- nodes$x[i] + sum(dx / dist^2) * 0.01
+    nodes$y[i] <- nodes$y[i] + sum(dy / dist^2) * 0.01
+  }
+
+  for (j in 1:nrow(edges)) {
+    idx_from <- which(nodes$label == edges$from[j])
+    idx_to   <- which(nodes$label == edges$to[j])
+
+    if (length(idx_from) == 1 && length(idx_to) == 1) {
+      dx <- nodes$x[idx_to] - nodes$x[idx_from]
+      dy <- nodes$y[idx_to] - nodes$y[idx_from]
+
+      nodes$x[idx_from] <- nodes$x[idx_from] + dx * 0.1
+      nodes$y[idx_from] <- nodes$y[idx_from] + dy * 0.1
+      nodes$x[idx_to]   <- nodes$x[idx_to]   - dx * 0.1
+      nodes$y[idx_to]   <- nodes$y[idx_to]   - dy * 0.1
+    }
+  }
+}
+
+edges_plot <- edges %>%
+  left_join(nodes %>% select(label, x, y), by = c("from" = "label")) %>%
+  rename(x0 = x, y0 = y) %>%
+  left_join(nodes %>% select(label, x, y), by = c("to" = "label")) %>%
+  rename(x1 = x, y1 = y)
+
+dim_colors <- c(
+  "Type"      = "#E69F00",
+  "Purpose"   = "#56B4E9",
+  "Epistemic" = "#009E73"
+)
+
+ggplot() +
+  geom_segment(
+    data = edges_plot,
+    aes(x = x0, y = y0, xend = x1, yend = y1, linewidth = weight),
+    alpha = 0.15,
+    color = "gray60"
+  ) +
+  geom_point(
+    data = nodes,
+    aes(x = x, y = y, color = dimension, size = freq),
+    alpha = 0.95
+  ) +
+  geom_text(
+    data = nodes,
+    aes(x = x, y = y, label = gsub("^[TPE]: ", "", label)),
+    size = 3.5,
+    vjust = -1.2,
+    fontface = "bold",
+    check_overlap = TRUE
+  ) +
+  scale_color_manual(values = dim_colors, name = "Dimension") +
+  scale_size_continuous(range = c(5, 12), name = "Frequency") +
+  scale_linewidth_continuous(range = c(0.5, 3), guide = "none") +
+  labs(
+    title = "QUIVR Epistemic Network Analysis",
+    subtitle = paste0(
+      "Showing codes appearing ", min_node_freq, "+ times | ",
+      "Edges ≥ ", edge_threshold, " co-occurrences | n = ", nrow(df), " papers"
+    )
+  ) +
+  theme_void(base_size = 13)
+
+# Type–Purpose Heatmaps by Epistemic Stance
+triads <- long %>%
+  select(.paper_id, dimension, label) %>%
+  pivot_wider(names_from = dimension, values_from = label, values_fn = list) %>%
+  unnest(Type, keep_empty = TRUE) %>%
+  unnest(Purpose, keep_empty = TRUE) %>%
+  unnest(Epistemic, keep_empty = TRUE) %>%
+  filter(!is.na(Type), !is.na(Purpose), !is.na(Epistemic)) %>%
+  mutate(
+    Type      = gsub("^T: ", "", Type),
+    Purpose   = gsub("^P: ", "", Purpose),
+    Epistemic = gsub("^E: ", "", Epistemic)
+  ) %>%
+  count(Type, Purpose, Epistemic, name = "freq") %>%
+  filter(freq >= 1)
+
+epi_levels <- unique(triads$Epistemic)
+
+make_heatmap <- function(epi) {
+  plot_data <- triads %>%
+    filter(Epistemic == epi) %>%
+    complete(Type, Purpose, fill = list(freq = 0))
+
+  ggplot(plot_data, aes(x = Type, y = Purpose, fill = freq)) +
+    geom_tile(color = "white", linewidth = 0.5) +
+    geom_text(
+      aes(label = ifelse(freq > 0, freq, "")),
+      color = "white",
+      fontface = "bold",
+      size = 4
+    ) +
+    scale_fill_gradient(
+      low = "gray90",
+      high = "#009E73",
+      na.value = "white"
+    ) +
+    labs(
+      title = paste("Triad Frequency:", epi),
+      x = "Type",
+      y = "Purpose",
+      fill = "Frequency"
+    ) +
+    theme_minimal(base_size = 11) +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+      axis.text.y = element_text(size = 9),
+      panel.grid  = element_blank()
+    )
+}
+
+heatmaps <- lapply(epi_levels, make_heatmap)
+wrap_plots(heatmaps, ncol = 1)
+```
+
+### 2.5 Code Setup
 
 ``` r
 ## Package Installation and Loading
