@@ -542,54 +542,7 @@ cat(sprintf("\n→ Mean Kappa for epistemology variables: %.3f (n=%d)\n",
 
 ### 5.6 Summary Results
 
-``` r
-## SUMMARY TABLE
-cat("\n╔═══════════════════════════════════════════════════════════╗\n")
-cat("║  SUMMARY: RELIABILITY BY VARIABLE TYPE                  ║\n")
-cat("╚═══════════════════════════════════════════════════════════╝\n\n")
-
-cat(sprintf("All count variables (ICC):       %.3f (n=%d)\n", 
-            mean(unlist(count_icc_results), na.rm=TRUE), 
-            length(count_icc_results)))
-
-cat(sprintf("Epistemology (Kappa):            %.3f (n=%d)\n", 
-            mean(unlist(epistemo_kappa_results), na.rm=TRUE), 
-            length(epistemo_kappa_results)))
-
-## Break down ICC by subcategories for reporting
-basic_counts <- c("Number.of.Figures", "Number.of.Tables")
-visual_types <- c("Matrix.Display", "Network", "Flowchart", "Box.display", 
-                  "Modified.Venn.Diagram", "Taxonomy", "Ladder", 
-                  "Metaphorical.visual.display", "Decision.tree.model",
-                  "Data.Based.Graphs", "Mixed.Media", "Screenshots", "Other",
-                  "Video", "Non.visual.Audio", "Photographs", "Drawings",
-                  "Audience.Accessibility")
-purpose_vars <- c("Descriptive", "Exploratory", "Explanatory", 
-                  "Interpretive", "Persuasive")
-
-cat("\n--- Subcategory Breakdown ---\n")
-cat(sprintf("  Basic counts (figures/tables): %.3f\n", 
-            mean(unlist(count_icc_results[basic_counts]), na.rm=TRUE)))
-cat(sprintf("  Visual type counts:            %.3f\n", 
-            mean(unlist(count_icc_results[visual_types]), na.rm=TRUE)))
-cat(sprintf("  Purpose counts:                %.3f\n", 
-            mean(unlist(count_icc_results[purpose_vars]), na.rm=TRUE)))
-```
-
 ### 5.7 Interpretation Guide
-
-``` r
-## INTERPRETATION (Landis & Koch, 1977)
-cat("\n╔═══════════════════════════════════════════════════════════╗\n")
-cat("║  INTERPRETATION (Landis & Koch, 1977)                   ║\n")
-cat("╚═══════════════════════════════════════════════════════════╝\n")
-cat("  < 0.00: Poor agreement\n")
-cat("  0.00 - 0.20: Slight agreement\n")
-cat("  0.21 - 0.40: Fair agreement\n")
-cat("  0.41 - 0.60: Moderate agreement\n")
-cat("  0.61 - 0.80: Substantial agreement\n")
-cat("  0.81 - 1.00: Almost perfect agreement\n")
-```
 
 ### 5.8 Key Findings
 
