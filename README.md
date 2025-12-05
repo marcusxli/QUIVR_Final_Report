@@ -21,7 +21,7 @@ We replicated Verdinelli and Scagnoli (2013) by coding 20 articles containing 33
 
 ## 1. Introduction {#introduction}
 
-This report presents a comprehensive replication and extension of Verdinelli and Scagnoli's (2013) framework for analyzing qualitative research visualizations. We examined how epistemological perspectives relate to visualization choices and analytical purposes in contemporary qualitative research publications.
+This report presents a comprehensive replication and extension of Verdinelli and Scagnoli's (2013) framework for analyzing qualitative research visualizations. We examined how epistomilogical stances relate to visualization choices and the visualizations purposes in qualitative research publications.
 
 ## 2. Methods {#methods}
 
@@ -37,4 +37,4 @@ This report presents a comprehensive replication and extension of Verdinelli and
 
 **Visualization Types**: - Matrix Display - Network - Flowchart - Box display - Modified Venn Diagram - Taxonomy - Ladder - Metaphorical visual display - Decision tree model - Screenshots - Photographs - Drawings
 
-**Analytical Purposes**: - Descriptive - Exploratory - Explanatory - Interpretive - Persuasive
+**Figure Purposes**: - Descriptive - Exploratory - Explanatory - Interpretive - Persuasive
