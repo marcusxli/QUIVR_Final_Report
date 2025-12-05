@@ -1,16 +1,69 @@
-## Comprehensive Analysis Report: Qualitative Visualization in Research (QUIVR)
+# Comprehensive Analysis Report: Qualitative Visualization in Research (QUIVR)
 
-### Abstract
+## Table of Contents
+
+1.  [Abstract](#1-abstract)
+2.  [Introduction](#2-introduction)
+    -   2.1 [Research Questions](#21-research-questions)
+3.  [Methods](#3-methods)
+    -   3.1 [Data Collection](#31-data-collection)
+    -   3.2 [Variables Coded](#32-variables-coded)
+    -   3.3 [Analytical Approach](#33-analytical-approach)
+4.  [ENA Data Prep](#4-ena-data-prep)
+    -   4.1 [Main Epistemic Network](#41-main-epistemic-network)
+    -   4.2 [Type-Purpose Heatmaps by Epistemic Stance](#42-type-purpose-heatmaps-by-epistemic-stance)
+5.  [Reliability Analysis](#5-reliability-analysis)
+    -   5.1 [Overview](#51-overview)
+    -   5.2 [Data Preparation for Reliability Analysis](#52-data-preparation-for-reliability-analysis)
+    -   5.3 [Variable Categories](#53-variable-categories)
+    -   5.4 [ICC Analysis for Count Variables](#54-icc-analysis-for-count-variables)
+    -   5.5 [Cohen's Kappa for Epistemology Variables](#55-cohens-kappa-for-epistemology-variables)
+    -   5.6 [Summary Results](#56-summary-results)
+    -   5.7 [Interpretation Guide](#57-interpretation-guide)
+    -   5.8 [Key Findings](#58-key-findings)
+6.  [Multiple Correspondence Analysis (MCA)](#6-multiple-correspondence-analysis-mca)
+    -   6.1 [Overview](#61-overview)
+    -   6.2 [Data Preparation](#62-data-preparation)
+    -   6.3 [Perform MCA](#63-perform-mca)
+    -   6.4 [MCA Interpretation](#64-mca-interpretation)
+7.  [Correspondence Analysis (CA)](#7-correspondence-analysis-ca)
+    -   7.1 [Overview](#71-overview)
+    -   7.2 [CA Without Missing Data](#72-ca-without-missing-data)
+    -   7.3 [CA With Missing Data](#73-ca-with-missing-data)
+    -   7.4 [CA Interpretation](#74-ca-interpretation)
+8.  [Principal Component Analysis (PCA)](#8-principal-component-analysis-pca)
+    -   8.1 [Overview](#81-overview)
+    -   8.2 [PCA Without Missing Data](#82-pca-without-missing-data)
+    -   8.3 [PCA With Missing Data](#83-pca-with-missing-data)
+    -   8.4 [PCA Interpretation](#84-pca-interpretation)
+9.  [Discussion](#9-discussion)
+    -   9.1 [Major Findings](#91-major-findings)
+    -   9.2 [Pattern Consistency Despite Low Reliability](#92-pattern-consistency-despite-low-reliability)
+    -   9.3 [Implications for Framework Development](#93-implications-for-framework-development)
+10. [Recommendations](#10-recommendations)
+    -   10.1 [Framework Improvements](#101-framework-improvements)
+    -   10.2 [Future Research Directions](#102-future-research-directions)
+11. [Conclusion](#11-conclusion)
+12. [Appendices](#12-appendices)
+    -   [Appendix A: Variable Definitions](#appendix-a-variable-definitions)
+    -   [Appendix B: Complete Reliability Statistics](#appendix-b-complete-reliability-statistics)
+    -   [Appendix C: Contingency Tables](#appendix-c-contingency-tables)
+    -   [Appendix D: Code Repository](#appendix-d-code-repository)
+13. [References](#13-references)
+
+------------------------------------------------------------------------
+
+## 1. Abstract
 
 We replicated Verdinelli and Scagnoli (2013) by coding 20 articles containing 33 visualizations from three qualitative journals (2020-2022). Interclass correlation revealed striking variation: high agreement on counting figures (ICC = 0.963), moderate agreement on epistemology type (ICC = 0.633), but poor agreement on analytical purpose (ICC = 0.186). Matrix and descriptive categories achieved only 65% agreement. Despite these reliability challenges, Epistemic Network Analysis revealed consistent patterns, as matrix displays dominated constructivist research for interpretive purposes, objectivist studies used matrices exploratorily, and subjectivist work employed photographs descriptively. Our findings reveal a paradox: qualitative visualizations exhibit reproducible patterns, yet current rubrics lack operational clarity for reliable coding. We recommend allowing multiple epistemological stances per paper, explicitly including tables as visualization types, and developing clearer operational definitions for analytical purposes to strengthen systematic analysis and enable rigorous cross-study comparison.
 
 ------------------------------------------------------------------------
 
-## 1. Introduction
+## 2. Introduction
 
 This report presents a comprehensive replication and extension of Verdinelli and Scagnoli's (2013) framework for analyzing qualitative research visualizations. We examined how epistemological stances relate to visualization choices and the visualizations' purposes in qualitative research publications.
 
-### 1.1 Research Questions
+### 2.1 Research Questions
 
 1.  What patterns exist between epistemological stances and visualization types?
 2.  How do analytical purposes relate to visualization choices?
@@ -19,24 +72,24 @@ This report presents a comprehensive replication and extension of Verdinelli and
 
 ------------------------------------------------------------------------
 
-## 2. Methods
+## 3. Methods
 
-### 2.1 Data Collection
+### 3.1 Data Collection
 
 -   **Sample**: 20 articles from three qualitative research journals (2020-2022)
 -   **Visualizations**: 33 total visualizations coded
 -   **Coders**: Two independent raters (Andrew and Marcus)
 -   **Data Source**: Google Sheets collaborative coding platform
 
-### 2.2 Variables Coded
+### 3.2 Variables Coded
 
-#### 2.2.1 Epistemological Stances
+#### 3.2.1 Epistemological Stances
 
 -   Objectivism
 -   Constructivism
 -   Subjectivism
 
-#### 2.2.2 Visualization Types
+#### 3.2.2 Visualization Types
 
 -   Matrix Display
 -   Network
@@ -51,7 +104,7 @@ This report presents a comprehensive replication and extension of Verdinelli and
 -   Photographs
 -   Drawings
 
-#### 2.2.3 Figure Purposes
+#### 3.2.3 Figure Purposes
 
 -   Descriptive
 -   Exploratory
@@ -59,7 +112,7 @@ This report presents a comprehensive replication and extension of Verdinelli and
 -   Interpretive
 -   Persuasive
 
-### 2.3 Analytical Approach
+### 3.3 Analytical Approach
 
 We employed multiple complementary statistical techniques:
 
@@ -69,9 +122,11 @@ We employed multiple complementary statistical techniques:
 4.  **Correspondence Analysis (CA)**: Two-way relationships between epistemology and visualization type
 5.  **Principal Component Analysis (PCA)**: Dimensional reduction of visualization patterns
 
-### 2.4 ENA Data Prep
+------------------------------------------------------------------------
 
-```r
+## 4. ENA Data Prep
+
+``` r
 # Setup
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -132,9 +187,9 @@ long <- df %>%
   )
 ```
 
-### 2.5 Main Epistemic Network
+### 4.1 Main Epistemic Network
 
-```r
+``` r
 set.seed(16)
 nodes$x <- runif(nrow(nodes))
 nodes$y <- runif(nrow(nodes))
@@ -210,11 +265,11 @@ ggplot() +
   theme_void(base_size = 20)
 ```
 
-<img src="images/ena_network.png" width="600">
+<img src="images/ena_network.png" width="600"/>
 
-### 2.6 Type-Purpose Heatmaps by Epistemic Stance
+### 4.2 Type-Purpose Heatmaps by Epistemic Stance
 
-```r
+``` r
 triads <- long %>%
   select(.paper_id, dimension, label) %>%
   pivot_wider(names_from = dimension, values_from = label, values_fn = list) %>%
@@ -268,9 +323,13 @@ heatmaps <- lapply(epi_levels, make_heatmap)
 wrap_plots(heatmaps, ncol = 1)
 ```
 
-<img src="images/heatmap.png" width="600">
+<img src="images/heatmap.png" width="600"/>
 
-### 2.7 Code Setup
+------------------------------------------------------------------------
+
+## 5. Reliability Analysis
+
+### Code Setup
 
 ``` r
 ## Package Installation and Loading
@@ -306,7 +365,7 @@ library(factoextra)
 library(irr)
 ```
 
-### 2.8 Data Import
+### Data Import
 
 ``` r
 ## Google Drive Authentication
@@ -334,15 +393,11 @@ tryCatch({
 })
 ```
 
-------------------------------------------------------------------------
-
-## 3. Reliability Analysis
-
-### 3.1 Overview
+### 5.1 Overview
 
 Inter-rater reliability was assessed using: - **Intraclass Correlation Coefficient (ICC)** for count variables - **Cohen's Kappa (κ)** for categorical epistemology variables
 
-### 3.2 Data Preparation for Reliability Analysis
+### 5.2 Data Preparation for Reliability Analysis
 
 ``` r
 ## Load CSV files for reliability testing
@@ -372,7 +427,7 @@ replace_na_0 <- function(x) {
 }
 ```
 
-### 3.3 Variable Categories
+### 5.3 Variable Categories
 
 ``` r
 ## COUNT VARIABLES (use ICC)
@@ -408,7 +463,7 @@ count_vars <- c(
 epistemo_vars <- c("Objectivism", "Constructivism", "Subjectivism")
 ```
 
-### 3.4 ICC Analysis for Count Variables
+### 5.4 ICC Analysis for Count Variables
 
 ``` r
 ## ICC FOR ALL COUNT VARIABLES
@@ -447,7 +502,7 @@ cat(sprintf("\n→ Mean ICC for all count variables: %.3f (n=%d)\n",
             length(count_icc_results)))
 ```
 
-### 3.5 Cohen's Kappa for Epistemology Variables
+### 5.5 Cohen's Kappa for Epistemology Variables
 
 ``` r
 ## EPISTEMOLOGY VARIABLES - CATEGORICAL (Cohen's Kappa)
@@ -485,7 +540,7 @@ cat(sprintf("\n→ Mean Kappa for epistemology variables: %.3f (n=%d)\n",
             length(epistemo_kappa_results)))
 ```
 
-### 3.6 Summary Results
+### 5.6 Summary Results
 
 ``` r
 ## SUMMARY TABLE
@@ -521,7 +576,7 @@ cat(sprintf("  Purpose counts:                %.3f\n",
             mean(unlist(count_icc_results[purpose_vars]), na.rm=TRUE)))
 ```
 
-### 3.7 Interpretation Guide
+### 5.7 Interpretation Guide
 
 ``` r
 ## INTERPRETATION (Landis & Koch, 1977)
@@ -536,7 +591,7 @@ cat("  0.61 - 0.80: Substantial agreement\n")
 cat("  0.81 - 1.00: Almost perfect agreement\n")
 ```
 
-### 3.8 Key Findings
+### 5.8 Key Findings
 
 **High Reliability** (ICC \> 0.80): - Basic figure and table counts: ICC = 0.963
 
@@ -546,13 +601,13 @@ cat("  0.81 - 1.00: Almost perfect agreement\n")
 
 ------------------------------------------------------------------------
 
-## 4. Multiple Correspondence Analysis (MCA)
+## 6. Multiple Correspondence Analysis (MCA)
 
-### 4.1 Overview
+### 6.1 Overview
 
 MCA examines three-way relationships between epistemology, purpose, and visualization type.
 
-### 4.2 Data Preparation
+### 6.2 Data Preparation
 
 ``` r
 ## Define variable groups
@@ -587,7 +642,7 @@ cat("Visualization variables:", length(viz_type_cols), "\n")
 cat("Total variables:", length(all_categorical_cols), "\n\n")
 ```
 
-### 4.3 Perform MCA
+### 6.3 Perform MCA
 
 ``` r
 ## Perform comprehensive MCA
@@ -612,19 +667,21 @@ fviz_mca_var(mca_full,
 # Factoshiny(mca_full)
 ```
 
-### 4.4 MCA Interpretation
+### 6.4 MCA Interpretation
 
 [INSERT INTERPRETATION OF MCA RESULTS HERE]
 
 ------------------------------------------------------------------------
 
-## 5. Correspondence Analysis (CA)
+## 7. Correspondence Analysis (CA)
 
-### 5.1 Overview
+### 7.1 Overview
 
 CA examines two-way relationships between epistemology and visualization type.
 
-### 5.2 CA Without Missing Data (Only papers with both epistemology AND figures)
+### 7.2 CA Without Missing Data
+
+Only papers with both epistemology AND figures:
 
 ``` r
 ## Transform data to long format
@@ -686,7 +743,9 @@ fviz_screeplot(ca_result,
 # Factoshiny(ca_result)
 ```
 
-### 5.3 CA With Missing Data (Including "None" categories)
+### 7.3 CA With Missing Data
+
+Including "None" categories:
 
 ``` r
 ## Transform with explicit "None" categories
@@ -746,19 +805,21 @@ fviz_ca_biplot(ca_result_missing,
                title = "CA: Epistemology vs Figure Type (Including 'None')")
 ```
 
-### 5.4 CA Interpretation
+### 7.4 CA Interpretation
 
 [INSERT INTERPRETATION OF CA RESULTS HERE]
 
 ------------------------------------------------------------------------
 
-## 6. Principal Component Analysis (PCA)
+## 8. Principal Component Analysis (PCA)
 
-### 6.1 Overview
+### 8.1 Overview
 
 PCA performs dimensional reduction on figure count data to identify latent patterns.
 
-### 6.2 PCA Without Missing Data (Filtered dataset)
+### 8.2 PCA Without Missing Data
+
+Filtered dataset:
 
 ``` r
 ## Prepare filtered data
@@ -799,7 +860,9 @@ fviz_pca_var(pca_result,
 # Factoshiny(pca_result)
 ```
 
-### 6.3 PCA With Missing Data (Complete dataset)
+### 8.3 PCA With Missing Data
+
+Complete dataset:
 
 ``` r
 ## Prepare complete data (including zeros)
@@ -842,29 +905,31 @@ fviz_pca_var(pca_result_complete,
 # Factoshiny(pca_result_complete)
 ```
 
-### 6.4 PCA Interpretation
+### 8.4 PCA Interpretation
 
 [INSERT INTERPRETATION OF PCA RESULTS HERE]
 
 ------------------------------------------------------------------------
 
-## 7. Discussion
+## 9. Discussion
 
-### 7.1 
+### 9.1 Major Findings
 
-### 7.2 Pattern Consistency Despite Low Reliability
+[INSERT MAJOR FINDINGS]
+
+### 9.2 Pattern Consistency Despite Low Reliability
 
 Despite low inter-rater reliability for some variables, the multivariate analyses (MCA, CA, PCA) revealed consistent patterns: - Matrix displays dominate constructivist research - Photographs cluster with subjectivist approaches - Descriptive purposes align with specific epistemologies
 
-### 7.3 Implications for Framework Development
+### 9.3 Implications for Framework Development
 
 [DISCUSS IMPLICATIONS]
 
 ------------------------------------------------------------------------
 
-## 8. Recommendations
+## 10. Recommendations
 
-### 8.1 Framework Improvements
+### 10.1 Framework Improvements
 
 1.  **Allow multiple epistemological stances per paper**
     -   Many qualitative studies blend epistemological approaches
@@ -873,7 +938,7 @@ Despite low inter-rater reliability for some variables, the multivariate analyse
     -   Establish calibration sessions
     -   Use reference examples for borderline cases
 
-### 8.2 Future Research Directions
+### 10.2 Future Research Directions
 
 1.  Expand sample to include more journals and time periods
 2.  Examine longitudinal trends in visualization practices
@@ -882,31 +947,33 @@ Despite low inter-rater reliability for some variables, the multivariate analyse
 
 ------------------------------------------------------------------------
 
-## 9. Conclusion
+## 11. Conclusion
+
+[INSERT CONCLUSION]
 
 ------------------------------------------------------------------------
 
-## 10. Appendices
+## 12. Appendices
 
-### Appendix A: Variable Definitions
+### Appendix A: Variable Definitions {#appendix-a-variable-definitions}
 
 [INSERT DETAILED VARIABLE DEFINITIONS]
 
-### Appendix B: Complete Reliability Statistics
+### Appendix B: Complete Reliability Statistics {#appendix-b-complete-reliability-statistics}
 
 [INSERT COMPLETE TABLES]
 
-### Appendix C: Contingency Tables
+### Appendix C: Contingency Tables {#appendix-c-contingency-tables}
 
 [INSERT ALL CONTINGENCY TABLES]
 
-### Appendix D: Code Repository
+### Appendix D: Code Repository {#appendix-d-code-repository}
 
 All analysis code is available at: [INSERT REPOSITORY LINK]
 
 ------------------------------------------------------------------------
 
-## References
+## 13. References
 
 Landis, J. R., & Koch, G. G. (1977). The measurement of observer agreement for categorical data. *Biometrics*, 33(1), 159-174.
 
@@ -914,4 +981,5 @@ Verdinelli, S., & Scagnoli, N. I. (2013). Data display in qualitative research. 
 
 ------------------------------------------------------------------------
 
-*Report generated: [DATE]* *Analysis conducted using R version [VERSION]*
+*Report generated: [DATE]*\
+*Analysis conducted using R version [VERSION]*
